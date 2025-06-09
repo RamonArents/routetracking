@@ -89,3 +89,6 @@ body {
   text-decoration: underline;
   color:rgb(22, 134, 172);
 }
+#login-form .error{
+  color:red;
+}
