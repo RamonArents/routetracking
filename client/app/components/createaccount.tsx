@@ -12,7 +12,7 @@ export function CreateAccount(){
       e.preventDefault();
 
       //TODO: API moet nog gebouwd worden.
-      const res = await fetch('http://localhost:3001/api/create-account', {
+      const res = await fetch('http://localhost:4000/adduser', {
         method: 'POST',
         headers:  { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, surname, company, phonenumber, email, password })
