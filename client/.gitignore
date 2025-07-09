@@ -7,4 +7,4 @@
 
 /generated/prisma
 
-.env
+.env.local
