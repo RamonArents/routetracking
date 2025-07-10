@@ -1,8 +1,22 @@
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom'
 
 export function Login(){
-    return (
+    //feedback from createaccount
+    const location = useLocation();
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+    useEffect(() => {
+      if (location.state?.successMessage) {
+        setSuccessMessage(location.state.successMessage);
+        //Clear message after refresh
+        window.history.replaceState({}, document.title);
+      }
+    }, [location.state]);
+
+    return (  
     <div id="login-form">
+      {successMessage && (<div className="success-message">{successMessage}</div>)}
       <h1>Login</h1>
       <form>
         <label htmlFor="email">Email:</label>
