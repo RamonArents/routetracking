@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 //DB connection
 const { Pool } = require("pg");
@@ -18,6 +19,7 @@ const pool = new Pool({
 });
 
 const app = express();
+const router = express.Router();
 const port = 4000;
 
 app.use(cors({
@@ -56,7 +58,13 @@ app.post("/adduser", async (req, res) => {
   
 });
 
+//login route
+//TODO: Setup frontend for login. Use correct database URL and JWT token (see ChatGpt)
+const authRoutes = require("./routes/auth");
+app.use("/api", authRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
+
+module.exports = router;
