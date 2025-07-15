@@ -39,21 +39,37 @@ export function CreateAccount() {
     } else if (!/^[\w.-]+@[\w.-]+\.\w+$/.test(email)) {
       errs.email = "Invalid email";
     }
-    if (!password.trim()) errs.password = "Password is required";
+    if (!password.trim()) {
+      errs.password = "Password is required";
+    } else {
+      if (!/[A-Z]/.test(password)) {
+        errs.password = "Password must contain at least one uppercase letter";
+      } else if (!/[0-9]/.test(password)) {
+        errs.password = "Password must contain at least one number";
+      } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+        errs.password = "Password must contain at least one special character";
+      } else if (password.length < 8) {
+        errs.password = "Password must be at least 8 characters long";
+      }
+    }
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
   }
 
-
+  /**
+   * Handles the create account form
+   * @param e prevent default
+   * @returns to homepage if account was successfully created, otherwise an error
+   */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     //Invalid form data
-    if(!validate()) return;
+    if (!validate()) return;
 
     //Save new user to the backend
-    const res: any = await fetch(`${HOST}/adduser`, {
+    const res = await fetch(`${HOST}/adduser`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, surname, company, phonenumber, email, password })
@@ -64,9 +80,9 @@ export function CreateAccount() {
     if (res.ok) {
       console.log('Account created!');
       //Go back to home page when account creation is succesful
-      navigate("/", { state: { successMessage: "Account created succesfully"}});
+      navigate("/", { state: { successMessage: "Account created succesfully" } });
     } else {
-      if(res.status === 409 && json.error === "Email already exists"){
+      if (res.status === 409 && json.error === "Email already exists") {
         setServerError("Email already exists");
       } else {
         console.log('Error creating account');

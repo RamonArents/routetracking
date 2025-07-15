@@ -2,19 +2,23 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
+import { UserCreatePayload } from './types/user';
 
 //DB connection
 const { Pool } = require("pg");
+
+//Routes
+const authRoutes = require("./routes/auth");
 
 dotenv.config();
 
 //data from .env file
 const pool = new Pool({
-    user: process.env.USER,
-    password: process.env.PASSWORD,
-    host: process.env.HOST,
-    port: process.env.PORT,
-    database: process.env.DATABASE,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  host: process.env.HOST,
+  port: process.env.PORT,
+  database: process.env.DATABASE,
 });
 
 const app = express();
@@ -22,48 +26,43 @@ const router = express.Router();
 const port = 4000;
 
 app.use(cors({
-  origin:"http://localhost:5173",
-  credentials:true,
+  origin: "http://localhost:5173",
+  credentials: true,
 }));
 app.use(express.json());
 
 //create account for user
-app.post("/adduser", async (req:any, res:any) => {
-  const name:string = req.body["name"];
-  const surname:string = req.body["surname"];
-  const company:string = req.body["company"];
-  const phonenumber:string = req.body["phonenumber"];
-  const email:string = req.body["email"];
-  const password:string = req.body["password"];
+app.post("/adduser", async (req: any, res: any) => {
+  const payload: UserCreatePayload = req.body;
 
-  try{
-    const saltRounds:number = 10;
-    const hashedPassword:string = await bcrypt.hash(password, saltRounds);
+  try {
 
-    const insertUser:string = "INSERT INTO users (name, surname, company, phonenumber, email, passwd) VALUES ($1, $2, $3, $4, $5, $6);";
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(payload.passwd, saltRounds);
 
-    const params:Array<string> = [name, surname, company, phonenumber, email, hashedPassword];
+    const insertUser = "INSERT INTO users (name, surname, company, phonenumber, email, passwd) VALUES ($1, $2, $3, $4, $5, $6);";
 
-    const response:object = await pool.query(insertUser, params);
+    const params = [payload.name, payload.surname, payload.company, payload.phonenumber, payload.email, hashedPassword];
+
+    const response = await pool.query(insertUser, params);
 
     console.log("Query executed");
     console.log(response);
 
     res.status(201).json({ message: "User created" });
-  } catch (err:any){
+  } catch (err: any) {
     console.error(`There was an error: ${err}`);
 
-    if(err.code === "23505"){ // Email not unique
-      res.status(409).json({ error: "Email already exists"});
+    if (err.code === "23505") { // Email not unique
+      res.status(409).json({ error: "Email already exists" });
     }
 
     res.status(500).json({ error: "Internal server error" });
   }
-  
+
 });
 
 //login route
-const authRoutes = require("./routes/auth");
 app.use("/api", authRoutes);
 
 app.listen(port, () => {

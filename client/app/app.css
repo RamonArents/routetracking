@@ -81,25 +81,24 @@ body {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
-#login-form span{
-  color:black;
+#login-form span {
+  color: black;
 }
 
-#login-form span a{
+#login-form span a {
   text-decoration: underline;
-  color:rgb(22, 134, 172);
+  color: rgb(22, 134, 172);
 }
 
-.error{
+.error {
   border: 1px solid red !important;
 }
-.color-red{
-  color:rgb(187, 24, 24) !important;
+
+.color-red {
+  color: rgb(187, 24, 24) !important;
 }
-.success-message {
-  background-color: #d4edda;
-  border: 1px solid #c3e6cb;
-  color: #155724;
+
+.feedback-message {
   padding: 10px;
   border-radius: 4px;
   margin-bottom: 20px;
@@ -108,3 +107,14 @@ body {
   font-size: 20px;
 }
 
+.success-message {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.error-message {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
