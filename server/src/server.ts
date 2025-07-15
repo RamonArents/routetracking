@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 
 //DB connection
 const { Pool } = require("pg");
@@ -29,7 +28,7 @@ app.use(cors({
 app.use(express.json());
 
 //create account for user
-app.post("/adduser", async (req, res) => {
+app.post("/adduser", async (req:any, res:any) => {
   const name:string = req.body["name"];
   const surname:string = req.body["surname"];
   const company:string = req.body["company"];
@@ -45,21 +44,25 @@ app.post("/adduser", async (req, res) => {
 
     const params:Array<string> = [name, surname, company, phonenumber, email, hashedPassword];
 
-    const response:object = pool.query(insertUser, params);
+    const response:object = await pool.query(insertUser, params);
 
     console.log("Query executed");
     console.log(response);
 
-    res.send("User added successfully");
-  } catch (err){
+    res.status(201).json({ message: "User created" });
+  } catch (err:any){
     console.error(`There was an error: ${err}`);
-    res.status(500).send("Error inserting user");
+
+    if(err.code === "23505"){ // Email not unique
+      res.status(409).json({ error: "Email already exists"});
+    }
+
+    res.status(500).json({ error: "Internal server error" });
   }
   
 });
 
 //login route
-//TODO: Setup frontend for login. Use correct database URL and JWT token (see ChatGpt)
 const authRoutes = require("./routes/auth");
 app.use("/api", authRoutes);
 

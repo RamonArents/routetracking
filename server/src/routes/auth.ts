@@ -11,7 +11,7 @@ const pool = new Pool({
 const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
 
 //login
-router.post("/", async (req:any, res:any) => {
+router.post("/login", async (req:any, res:any) => {
   const { email, password } = req.body;
 
   if(!email || !password){

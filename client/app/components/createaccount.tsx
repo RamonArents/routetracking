@@ -13,6 +13,7 @@ export function CreateAccount() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [serverError, setServerError] = useState<string>('');
   //Navigation
   const navigate = useNavigate();
 
@@ -58,12 +59,19 @@ export function CreateAccount() {
       body: JSON.stringify({ name, surname, company, phonenumber, email, password })
     });
 
+    const json = await res.json();
+
     if (res.ok) {
       console.log('Account created!');
       //Go back to home page when account creation is succesful
       navigate("/", { state: { successMessage: "Account created succesfully"}});
     } else {
-      console.log('Error creating account');
+      if(res.status === 409 && json.error === "Email already exists"){
+        setServerError("Email already exists");
+      } else {
+        console.log('Error creating account');
+        setServerError("An unexpected error occurred. Please try again.");
+      }
     }
 
   }
@@ -80,7 +88,7 @@ export function CreateAccount() {
         <input className={errors.company ? "error" : ""} type="text" id="company" name="company" value={company} onChange={e => setCompany(e.target.value)} required />
         <label htmlFor="phonenumber">Phone number* {errors.phonenumber && <span className="color-red">{errors.phonenumber}</span>}:</label>
         <input className={errors.phonenumber ? "error" : ""} type="tel" id="phonenumber" name="phonenumber" value={phonenumber} onChange={e => setPhonnumber(e.target.value)} required />
-        <label htmlFor="email">Email* {errors.email && <span className="color-red">{errors.email}</span>}:</label>
+        <label htmlFor="email">Email* {errors.email || serverError && <span className="color-red">{errors.email || serverError}</span>}:</label>
         <input className={errors.email ? "error" : ""} type="email" id="email" name="email" value={email} onChange={e => setEmail(e.target.value)} required />
         <label htmlFor="password">Password* {errors.password && <span className="color-red">{errors.password}</span>}:</label>
         <input className={errors.password ? "error" : ""} type="password" id="password" name="password" value={password} onChange={e => setPassword(e.target.value)} required />
