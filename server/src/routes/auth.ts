@@ -20,12 +20,12 @@ router.post("/login", async (req: any, res: any) => {
 
   try {
     const result = await pool.query(
-      "SELECT id, email, passwd FROM users WHERE email = $1",
+      "SELECT id, name, email, passwd FROM users WHERE email = $1",
       [email]
     );
 
     if (result.rows.length === 0) {
-      res.status(401).json({ error: "User account not found." });
+      return res.status(401).json({ error: "User account not found." });
     }
 
     const user = result.rows[0];
@@ -33,19 +33,19 @@ router.post("/login", async (req: any, res: any) => {
     const passwordMatch = await bcrypt.compare(password, user.passwd);
 
     if (!passwordMatch) {
-      res.status(401).json({ error: "Wrong password" });
+      return res.status(401).json({ error: "Wrong password" });
     }
 
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { userId: user.id, email: user.email, name: user.name },
       JWT_SECRET,
       { expiresIn: "1h" }
     );
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, //Set this to true in the live environment
-      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production", 
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
       maxAge: 60 * 60 * 1000 // 1 hour
     });
 

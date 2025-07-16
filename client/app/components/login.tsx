@@ -34,6 +34,7 @@ export function Login() {
     const res = await fetch(`${HOST}/api/login`, {
       method: "POST",
       headers: { "content-type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ email, password })
     });
 

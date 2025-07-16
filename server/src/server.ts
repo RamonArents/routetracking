@@ -41,7 +41,7 @@ function authMiddleWare(req: any, res: any, next: any) {
   const token = req.cookies.token;
 
   if (!token) {
-    res.status(401).json({ error: "Unauthorized" });
+    return res.status(401).json({ error: "Unauthorized" });
   }
 
   try {
@@ -49,7 +49,7 @@ function authMiddleWare(req: any, res: any, next: any) {
     req.user = decoded;
     next();
   } catch (err) {
-    res.status(401).json({ error: "Invalid or expired token" })
+    return res.status(401).json({ error: "Invalid or expired token" })
   }
 }
 
@@ -93,8 +93,8 @@ app.post("/adduser", async (req: any, res: any) => {
 app.use("/api", authRoutes);
 
 //Useroverview route
-app.get("/useroverview", authMiddleWare, (req, res) => {
-  res.json({ message: `Hello ${req}` })
+app.get("/api/useroverview", authMiddleWare, (req:any, res:any) => {
+  res.json({ user: req.user })
 });
 
 app.listen(port, () => {

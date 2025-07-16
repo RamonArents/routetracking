@@ -14,6 +14,17 @@ body {
   }
 }
 
+.container{
+  display: flex;
+  justify-content: center;
+  margin-top:50px;
+  font-family: "Poppins", sans-serif;
+}
+
+.container h1{
+  font-size: 2em;
+}
+
 #login-form {
   width: 400px;
   max-width: 100%;

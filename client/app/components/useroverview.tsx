@@ -1,5 +1,7 @@
-export function UserView(){
+export function UserView({name}: {name:string}){
     return(
-        <h1>Welcome [username here]</h1>
+        <div className="container">
+            <h1>Welcome {name}</h1>
+        </div>
     )
 }
