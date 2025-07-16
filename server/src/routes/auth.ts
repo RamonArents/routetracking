@@ -11,29 +11,29 @@ const pool = new Pool({
 const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
 
 //login
-router.post("/login", async (req:any, res:any) => {
+router.post("/login", async (req: any, res: any) => {
   const { email, password } = req.body;
 
-  if(!email || !password){
-    return res.status(400).json({ error: "Email and password are required" });
+  if (!email || !password) {
+    res.status(400).json({ error: "Email and password are required" });
   }
 
-  try{
+  try {
     const result = await pool.query(
       "SELECT id, email, passwd FROM users WHERE email = $1",
       [email]
     );
 
-    if(result.rows.length === 0){
-      return res.status(401).json({ error: "User account not found." });
+    if (result.rows.length === 0) {
+      res.status(401).json({ error: "User account not found." });
     }
 
     const user = result.rows[0];
 
     const passwordMatch = await bcrypt.compare(password, user.passwd);
 
-    if(!passwordMatch){
-      return res.status(401).json({ error: "Wrong password" });   
+    if (!passwordMatch) {
+      res.status(401).json({ error: "Wrong password" });
     }
 
     const token = jwt.sign(
@@ -42,9 +42,16 @@ router.post("/login", async (req:any, res:any) => {
       { expiresIn: "1h" }
     );
 
-    res.json({ token });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false, //Set this to true in the live environment
+      sameSite: "strict",
+      maxAge: 60 * 60 * 1000 // 1 hour
+    });
 
-  } catch(err) {
+    res.json({ message: "Logged in successfully" });
+
+  } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
   }

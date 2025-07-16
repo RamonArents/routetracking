@@ -11,7 +11,7 @@ export function CreateAccount() {
   const [company, setCompany] = useState<string>('');
   const [phonenumber, setPhonnumber] = useState<string>('');
   const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+  const [passwd, setPasswd] = useState<string>('');
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [serverError, setServerError] = useState<string>('');
   //Navigation
@@ -39,17 +39,17 @@ export function CreateAccount() {
     } else if (!/^[\w.-]+@[\w.-]+\.\w+$/.test(email)) {
       errs.email = "Invalid email";
     }
-    if (!password.trim()) {
-      errs.password = "Password is required";
+    if (!passwd.trim()) {
+      errs.passwd = "Password is required";
     } else {
-      if (!/[A-Z]/.test(password)) {
-        errs.password = "Password must contain at least one uppercase letter";
-      } else if (!/[0-9]/.test(password)) {
-        errs.password = "Password must contain at least one number";
-      } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-        errs.password = "Password must contain at least one special character";
-      } else if (password.length < 8) {
-        errs.password = "Password must be at least 8 characters long";
+      if (!/[A-Z]/.test(passwd)) {
+        errs.passwd = "Password must contain at least one uppercase letter";
+      } else if (!/[0-9]/.test(passwd)) {
+        errs.passwd = "Password must contain at least one number";
+      } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(passwd)) {
+        errs.passwd = "Password must contain at least one special character";
+      } else if (passwd.length < 8) {
+        errs.passwd = "Password must be at least 8 characters long";
       }
     }
 
@@ -72,7 +72,7 @@ export function CreateAccount() {
     const res = await fetch(`${HOST}/adduser`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, surname, company, phonenumber, email, password })
+      body: JSON.stringify({ name, surname, company, phonenumber, email, passwd }),
     });
 
     const json = await res.json();
@@ -106,8 +106,8 @@ export function CreateAccount() {
         <input className={errors.phonenumber ? "error" : ""} type="tel" id="phonenumber" name="phonenumber" value={phonenumber} onChange={e => setPhonnumber(e.target.value)} required />
         <label htmlFor="email">Email* {errors.email || serverError && <span className="color-red">{errors.email || serverError}</span>}:</label>
         <input className={errors.email ? "error" : ""} type="email" id="email" name="email" value={email} onChange={e => setEmail(e.target.value)} required />
-        <label htmlFor="password">Password* {errors.password && <span className="color-red">{errors.password}</span>}:</label>
-        <input className={errors.password ? "error" : ""} type="password" id="password" name="password" value={password} onChange={e => setPassword(e.target.value)} required />
+        <label htmlFor="password">Password* {errors.passwd && <span className="color-red">{errors.passwd}</span>}:</label>
+        <input className={errors.passwd ? "error" : ""} type="password" id="password" name="password" value={passwd} onChange={e => setPasswd(e.target.value)} required />
         <br />
         <br />
         <input type="submit" value="Submit" />

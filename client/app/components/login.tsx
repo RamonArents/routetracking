@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom'
+import { useNavigate } from "react-router";
 
 //Host from .env file
 const HOST = import.meta.env.VITE_HOST;
@@ -11,6 +12,8 @@ export function Login() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
+  //Navigation
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (location.state?.successMessage) {
@@ -35,9 +38,7 @@ export function Login() {
     });
 
     if (res.ok) {
-      const data = await res.json();
-      localStorage.setItem("token", data.token);
-      //TODO: Making the page after the successful login
+      navigate("/useroverview");
       console.log("Login successful");
     } else {
       const err = await res.json();
