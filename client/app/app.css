@@ -92,7 +92,8 @@ body {
 #login-form form input[type="text"],
 #login-form form input[type="tel"],
 #login-form form input[type="email"],
-#login-form form input[type="password"] {
+#login-form form input[type="password"],
+#role {
   width: 100%;
   padding: 12px;
   border: 1px solid lightgray;

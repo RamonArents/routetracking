@@ -20,7 +20,7 @@ router.post("/login", async (req: any, res: any) => {
 
   try {
     const result = await pool.query(
-      "SELECT id, name, email, passwd FROM users WHERE email = $1",
+      "SELECT id, name, email, passwd, role FROM users WHERE email = $1",
       [email]
     );
 
@@ -37,14 +37,14 @@ router.post("/login", async (req: any, res: any) => {
     }
 
     const token = jwt.sign(
-      { userId: user.id, email: user.email, name: user.name },
+      { userId: user.id, email: user.email, name: user.name, role: user.role },
       JWT_SECRET,
       { expiresIn: "1h" }
     );
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", 
+      secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
       maxAge: 60 * 60 * 1000 // 1 hour
     });

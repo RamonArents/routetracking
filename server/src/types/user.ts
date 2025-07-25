@@ -5,4 +5,5 @@ export interface UserCreatePayload {
     phonenumber: string;
     email: string;
     passwd: string;
+    selectedRole: string;
 }

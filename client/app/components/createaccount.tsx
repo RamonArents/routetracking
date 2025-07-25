@@ -9,6 +9,7 @@ export function CreateAccount() {
   const [name, setName] = useState<string>('');
   const [surname, setSurname] = useState<string>('');
   const [company, setCompany] = useState<string>('');
+  const [selectedRole, setSelectedRole] = useState<string>('driver');
   const [phonenumber, setPhonnumber] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [passwd, setPasswd] = useState<string>('');
@@ -58,6 +59,14 @@ export function CreateAccount() {
   }
 
   /**
+   * Handle selectbox
+   * @param event target event
+   */
+  const handleChange = (event: any) => {
+    setSelectedRole(event.target.value);
+  }
+
+  /**
    * Handles the create account form
    * @param e prevent default
    * @returns to homepage if account was successfully created, otherwise an error
@@ -72,7 +81,7 @@ export function CreateAccount() {
     const res = await fetch(`${HOST}/adduser`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, surname, company, phonenumber, email, passwd }),
+      body: JSON.stringify({ name, surname, company, phonenumber, email, passwd, selectedRole }),
     });
 
     const json = await res.json();
@@ -102,6 +111,11 @@ export function CreateAccount() {
         <input className={errors.surname ? "error" : ""} type="text" id="surname" name="surname" value={surname} onChange={e => setSurname(e.target.value)} required />
         <label htmlFor="company">Company* {errors.company && <span className="color-red">{errors.company}</span>}:</label>
         <input className={errors.company ? "error" : ""} type="text" id="company" name="company" value={company} onChange={e => setCompany(e.target.value)} required />
+        <label htmlFor="role">Role*</label>
+        <select name="role" id="role" value={selectedRole} onChange={handleChange}>
+          <option value="driver">Driver</option>
+          <option value="operator">Operator</option>
+        </select>
         <label htmlFor="phonenumber">Phone number* {errors.phonenumber && <span className="color-red">{errors.phonenumber}</span>}:</label>
         <input className={errors.phonenumber ? "error" : ""} type="tel" id="phonenumber" name="phonenumber" value={phonenumber} onChange={e => setPhonnumber(e.target.value)} required />
         <label htmlFor="email">Email* {errors.email || serverError && <span className="color-red">{errors.email || serverError}</span>}:</label>

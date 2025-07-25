@@ -28,15 +28,22 @@ export default function UserOverview() {
         checkAuth();
     }, []);
 
-    if(loading){
+    if (loading) {
         return <p>Loading...</p>
     }
 
-    if(!user){
+    if (!user) {
         return <p>User not found.</p>
     }
 
-    return (
-        <UserView name={user.name} />
-    )
+    if (user.role == "driver") {
+        return (
+            <UserView name={user.name} />
+        )
+    } else {
+        return (
+            <p>This will become the operator page. Work in progress...</p>
+        )
+    }
+
 }

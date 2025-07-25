@@ -63,13 +63,14 @@ app.post("/adduser", async (req: any, res: any) => {
   }
 
   try {
+    console.log(payload);
 
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(payload.passwd, saltRounds);
 
-    const insertUser = "INSERT INTO users (name, surname, company, phonenumber, email, passwd) VALUES ($1, $2, $3, $4, $5, $6);";
+    const insertUser = "INSERT INTO users (name, surname, company, phonenumber, email, passwd, role) VALUES ($1, $2, $3, $4, $5, $6, $7);";
 
-    const params = [payload.name, payload.surname, payload.company, payload.phonenumber, payload.email, hashedPassword];
+    const params = [payload.name, payload.surname, payload.company, payload.phonenumber, payload.email, hashedPassword, payload.selectedRole];
 
     const response = await pool.query(insertUser, params);
 
@@ -93,7 +94,7 @@ app.post("/adduser", async (req: any, res: any) => {
 app.use("/api", authRoutes);
 
 //Useroverview route
-app.get("/api/useroverview", authMiddleWare, (req:any, res:any) => {
+app.get("/api/useroverview", authMiddleWare, (req: any, res: any) => {
   res.json({ user: req.user })
 });
 
