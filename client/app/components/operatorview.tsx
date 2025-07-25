@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 //Host from .env file
 const HOST = import.meta.env.VITE_HOST;
@@ -8,7 +9,8 @@ export function OperatorView({ name }: { name: string }) {
     //States
     const [task, setTask] = useState<string>('');
     const [description, setDescription] = useState<string>('');
-    const [selectedUser, setSelectedUser] = useState<number>(0);
+    const [users, setUsers] = useState([]);
+    const [selectedUserId, setSelectedUserid] = useState<string>('');
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
     /**
@@ -25,12 +27,22 @@ export function OperatorView({ name }: { name: string }) {
         return Object.keys(errs).length === 0;
     }
 
+    useEffect(() => {
+        axios.get(`${HOST}/api/users`, {
+            withCredentials: true
+        }).then((response: any) => {
+            setUsers(response.data)
+        }).catch((error: any) => {
+            console.error("Error fetchting users:", error);
+        })
+    }, []);
+
     /**
      * Handle selectbox
      * @param event target event
      */
     const handleChange = (event: any) => {
-        setSelectedUser(event.target.value);
+        setSelectedUserid(event.target.value);
     }
 
     /**
@@ -48,7 +60,7 @@ export function OperatorView({ name }: { name: string }) {
         const res = await fetch(`${HOST}/addtask`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ task, description, selectedUser }),
+            body: JSON.stringify({ task, description, selectedUserId }),
         });
 
         if (res.ok) {
@@ -70,9 +82,10 @@ export function OperatorView({ name }: { name: string }) {
                 <label htmlFor="description">Description* {errors.description && <span className="color-red">{errors.description}</span>}:</label>
                 <input className={errors.description ? "error" : ""} type="text" id="description" name="description" value={description} onChange={e => setDescription(e.target.value)} required />
                 <label htmlFor="user">User*</label>
-                <select name="user" id="user" value={selectedUser} onChange={handleChange}>
-                    {/* TODO: Fetch user data from DB */}
-                    <option value="driver">Driver</option>
+                <select name="user" id="user" value={selectedUserId} onChange={handleChange}>
+                    {users.map((user: any) => (
+                        <option key={user.id} value={user.id}>{user.email}</option>
+                    ))}
                 </select>
                 <br />
                 <br />

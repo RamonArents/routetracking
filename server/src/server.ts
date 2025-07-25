@@ -98,6 +98,17 @@ app.get("/api/useroverview", authMiddleWare, (req: any, res: any) => {
   res.json({ user: req.user })
 });
 
+//select users
+app.get("/api/users", authMiddleWare, async (req: any, res:any) => {
+  try{
+    const result = await pool.query("SELECT id, email FROM users");
+    res.json(result.rows);
+  }catch(err){
+    console.error("Error fetchting users: ", err);
+    res.status(500).json({ error: "Failed to fetch users"});
+  }
+});
+
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });
