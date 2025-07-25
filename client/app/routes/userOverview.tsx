@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { OperatorView } from "~/components/operatorview";
 import { UserView } from "~/components/useroverview";
 
 const HOST = import.meta.env.VITE_HOST;
@@ -42,7 +43,7 @@ export default function UserOverview() {
         )
     } else {
         return (
-            <p>This will become the operator page. Work in progress...</p>
+            <OperatorView name={user.name} />
         )
     }
 

@@ -106,7 +106,7 @@ export function CreateAccount() {
       <h1>Register</h1>
       <form onSubmit={handleSubmit}>
         <label htmlFor="name">Name* {errors.name && <span className="color-red">{errors.name}</span>}:</label>
-        <input className={errors.name ? "error" : ""} type="text" id="name" value={name} onChange={e => setName(e.target.value)} required />
+        <input className={errors.name ? "error" : ""} type="text" id="name" name="name" value={name} onChange={e => setName(e.target.value)} required />
         <label htmlFor="surname">Surname* {errors.surname && <span className="color-red">{errors.surname}</span>}:</label>
         <input className={errors.surname ? "error" : ""} type="text" id="surname" name="surname" value={surname} onChange={e => setSurname(e.target.value)} required />
         <label htmlFor="company">Company* {errors.company && <span className="color-red">{errors.company}</span>}:</label>

@@ -22,7 +22,7 @@ body {
   text-align: center;
 }
 
-.container h1 {
+.container h1, h2 {
   font-size: 2em;
 }
 
@@ -65,7 +65,7 @@ body {
   font-family: "Poppins", sans-serif;
 }
 
-#login-form h1 {
+#login-form h1, h2 {
   text-align: center;
   margin: 0;
   padding: 20px 0;
@@ -93,7 +93,8 @@ body {
 #login-form form input[type="tel"],
 #login-form form input[type="email"],
 #login-form form input[type="password"],
-#role {
+#role,
+#user {
   width: 100%;
   padding: 12px;
   border: 1px solid lightgray;
