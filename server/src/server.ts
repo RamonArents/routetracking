@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import { UserCreatePayload } from './types/user';
+import { TaskCreatePayload } from './types/task';
 
 const cookieParser = require("cookie-parser");
 dotenv.config();
@@ -63,7 +64,6 @@ app.post("/adduser", async (req: any, res: any) => {
   }
 
   try {
-    console.log(payload);
 
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(payload.passwd, saltRounds);
@@ -84,6 +84,30 @@ app.post("/adduser", async (req: any, res: any) => {
     if (err.code === "23505") { // Email not unique
       return res.status(409).json({ error: "Email already exists" });
     }
+
+    return res.status(500).json({ error: "Internal server error" });
+  }
+
+});
+
+//create task
+app.post("/addtask", async (req: any, res: any) => {
+  const payload: TaskCreatePayload = req.body;
+
+  try {
+
+    const insertTask = "INSERT INTO tasks (task, description, user_id) VALUES ($1, $2, $3);";
+
+    const params = [payload.task, payload.description, payload.user];
+
+    const response = await pool.query(insertTask, params);
+
+    console.log("Query executed");
+    console.log(response);
+
+    res.status(201).json({ message: "Task created" });
+  } catch (err: any) {
+    console.error(`There was an error: ${err}`);
 
     return res.status(500).json({ error: "Internal server error" });
   }

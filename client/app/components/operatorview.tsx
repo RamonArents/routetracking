@@ -57,6 +57,7 @@ export function OperatorView({ name }: { name: string }) {
         if (!validate()) return;
 
         //Save new user to the backend
+        //TODO: User id is null in db. Find out what is going wrong.
         const res = await fetch(`${HOST}/addtask`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -80,7 +81,7 @@ export function OperatorView({ name }: { name: string }) {
                 <label htmlFor="task">Task* {errors.task && <span className="color-red">{errors.task}</span>}:</label>
                 <input className={errors.task ? "error" : ""} type="text" id="task" name="task" value={task} onChange={e => setTask(e.target.value)} required />
                 <label htmlFor="description">Description* {errors.description && <span className="color-red">{errors.description}</span>}:</label>
-                <input className={errors.description ? "error" : ""} type="text" id="description" name="description" value={description} onChange={e => setDescription(e.target.value)} required />
+                <textarea className={errors.description ? "error" : ""} id="description" name="description" value={description} onChange={e => setDescription(e.target.value)} required></textarea>
                 <label htmlFor="user">User*</label>
                 <select name="user" id="user" value={selectedUserId} onChange={handleChange}>
                     {users.map((user: any) => (
