@@ -98,7 +98,7 @@ app.post("/addtask", async (req: any, res: any) => {
 
     const insertTask = "INSERT INTO tasks (task, description, user_id) VALUES ($1, $2, $3);";
 
-    const params = [payload.task, payload.description, payload.user];
+    const params = [payload.task, payload.description, payload.user_id];
 
     const response = await pool.query(insertTask, params);
 
@@ -126,6 +126,19 @@ app.get("/api/useroverview", authMiddleWare, (req: any, res: any) => {
 app.get("/api/users", authMiddleWare, async (req: any, res:any) => {
   try{
     const result = await pool.query("SELECT id, email FROM users");
+    res.json(result.rows);
+  }catch(err){
+    console.error("Error fetchting users: ", err);
+    res.status(500).json({ error: "Failed to fetch users"});
+  }
+});
+
+//select tasks
+app.get("/api/tasks", authMiddleWare, async (req: any, res:any) => {
+  const userId  = parseInt(req.query.user_id);
+
+  try{
+    const result = await pool.query("SELECT task, description FROM tasks WHERE user_id = $1", [userId]);
     res.json(result.rows);
   }catch(err){
     console.error("Error fetchting users: ", err);

@@ -39,7 +39,7 @@ export default function UserOverview() {
 
     if (user.role == "driver") {
         return (
-            <UserView name={user.name} />
+            <UserView name={user.name} user_id={user.userId} />
         )
     } else {
         return (

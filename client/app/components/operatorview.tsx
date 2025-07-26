@@ -9,9 +9,11 @@ export function OperatorView({ name }: { name: string }) {
     //States
     const [task, setTask] = useState<string>('');
     const [description, setDescription] = useState<string>('');
-    const [users, setUsers] = useState([]);
-    const [selectedUserId, setSelectedUserid] = useState<string>('');
+    const [users, setUsers] = useState<Array<any>>([]);
+    const [user_id, setUser_id] = useState<string>('');
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string>('');
 
     /**
      * Validates the form data
@@ -42,7 +44,7 @@ export function OperatorView({ name }: { name: string }) {
      * @param event target event
      */
     const handleChange = (event: any) => {
-        setSelectedUserid(event.target.value);
+        setUser_id(event.target.value);
     }
 
     /**
@@ -57,24 +59,27 @@ export function OperatorView({ name }: { name: string }) {
         if (!validate()) return;
 
         //Save new user to the backend
-        //TODO: User id is null in db. Find out what is going wrong.
         const res = await fetch(`${HOST}/addtask`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ task, description, selectedUserId }),
+            body: JSON.stringify({ task, description, user_id }),
         });
 
         if (res.ok) {
             console.log('Task created!');
+            setSuccessMessage("Task successfully created.");
         } else {
             console.log('Error creating task');
             console.log("An unexpected error occurred. Please try again.");
+            setErrorMessage("Something went wrong creating the task.")
         }
 
     }
 
     return (
         <div id="login-form">
+            {successMessage && (<div className="feedback-message success-message">{successMessage}</div>)}
+            {errorMessage && (<div className="feedback-message error-message">{errorMessage}</div>)}
             <h1>Welcome {name}</h1>
             <h2>Create task</h2>
             <form onSubmit={handleSubmit}>
@@ -83,7 +88,7 @@ export function OperatorView({ name }: { name: string }) {
                 <label htmlFor="description">Description* {errors.description && <span className="color-red">{errors.description}</span>}:</label>
                 <textarea className={errors.description ? "error" : ""} id="description" name="description" value={description} onChange={e => setDescription(e.target.value)} required></textarea>
                 <label htmlFor="user">User*</label>
-                <select name="user" id="user" value={selectedUserId} onChange={handleChange}>
+                <select name="user" id="user" value={user_id} onChange={handleChange}>
                     {users.map((user: any) => (
                         <option key={user.id} value={user.id}>{user.email}</option>
                     ))}

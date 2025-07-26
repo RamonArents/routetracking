@@ -1,5 +1,5 @@
 export interface TaskCreatePayload {
     task: string;
     description: string;
-    user: number;
+    user_id: number;
 }
