@@ -5,9 +5,10 @@ import axios from "axios";
 const HOST = import.meta.env.VITE_HOST;
 
 export function UserView({ name, user_id }: { name: string, user_id: number }) {
-    const [task1Checked, setTask1Checked] = useState(false);
+    const [taskChecked, setTaskChecked] = useState(false);
     const [tasks, setTasks] = useState<Array<any>>([]);
 
+    //Get tasks for user
     useEffect(() => {
         axios.get(`${HOST}/api/tasks`, {
             withCredentials: true,
@@ -15,9 +16,23 @@ export function UserView({ name, user_id }: { name: string, user_id: number }) {
         }).then((response: any) => {
             setTasks(response.data)
         }).catch((error: any) => {
-            console.error("Error fetchting users:", error);
+            console.error("Error fetchting tasks:", error);
         })
     }, []);
+
+    // Update when tasks are done
+    useEffect(() => {
+        axios.put(`${HOST}/api/taskupdate`, {
+            done: taskChecked ? 1 : 0,
+            user_id
+        }, {
+            withCredentials: true
+        }).then((response: any) => {
+            console.log(response.data);
+        }).catch((error: any) => {
+            console.error("Error updating tasks:", error);
+        })
+    }, [taskChecked]); // Only run when taskChecked changes
 
     return (
         <div className="container">
@@ -26,8 +41,9 @@ export function UserView({ name, user_id }: { name: string, user_id: number }) {
                 <div key={index} className="card">
                     <h2>{task.task}</h2><br />
                     {task.description} <br /><br />
-                    {/* TODO: Make this functional / make logout functionality */}
-                    Is this correct?: <input type="checkbox" checked={task1Checked} onChange={(e) => setTask1Checked(e.target.checked)} required />
+                    {/* TODO: make logout functionality */}
+                    {/* TODO: refactor so it can work with more tasks */}
+                    Done?: <input type="checkbox" checked={taskChecked} onChange={(e) => setTaskChecked(e.target.checked)} required />
                 </div>
             ))}
         </div>

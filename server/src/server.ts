@@ -141,8 +141,22 @@ app.get("/api/tasks", authMiddleWare, async (req: any, res:any) => {
     const result = await pool.query("SELECT task, description FROM tasks WHERE user_id = $1", [userId]);
     res.json(result.rows);
   }catch(err){
-    console.error("Error fetchting users: ", err);
-    res.status(500).json({ error: "Failed to fetch users"});
+    console.error("Error fetchting tasks: ", err);
+    res.status(500).json({ error: "Failed to fetch tasks"});
+  }
+});
+
+//update tasks
+app.put("/api/taskupdate", authMiddleWare, async (req: any, res:any) => {
+  const userId  = parseInt(req.body.user_id);
+  const done = parseInt(req.body.done);
+
+  try{
+    const result = await pool.query("UPDATE tasks SET done = $1 WHERE user_id = $2", [done, userId]);
+    res.json(result.rows);
+  }catch(err){
+    console.error("Error updating tasks: ", err);
+    res.status(500).json({ error: "Failed to update tasks"});
   }
 });
 
