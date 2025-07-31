@@ -138,7 +138,7 @@ app.get("/api/tasks", authMiddleWare, async (req: any, res:any) => {
   const userId  = parseInt(req.query.user_id);
 
   try{
-    const result = await pool.query("SELECT task, description FROM tasks WHERE user_id = $1", [userId]);
+    const result = await pool.query("SELECT id, task, description, done FROM tasks WHERE user_id = $1 ORDER BY id", [userId]);
     res.json(result.rows);
   }catch(err){
     console.error("Error fetchting tasks: ", err);
@@ -150,9 +150,10 @@ app.get("/api/tasks", authMiddleWare, async (req: any, res:any) => {
 app.put("/api/taskupdate", authMiddleWare, async (req: any, res:any) => {
   const userId  = parseInt(req.body.user_id);
   const done = parseInt(req.body.done);
+  const taskId = parseInt(req.body.task_id);
 
   try{
-    const result = await pool.query("UPDATE tasks SET done = $1 WHERE user_id = $2", [done, userId]);
+    const result = await pool.query("UPDATE tasks SET done = $1 WHERE id = $2 AND user_id = $3", [done, taskId, userId]);
     res.json(result.rows);
   }catch(err){
     console.error("Error updating tasks: ", err);

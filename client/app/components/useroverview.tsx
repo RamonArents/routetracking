@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import React from "react";
 
 //Host from .env file
 const HOST = import.meta.env.VITE_HOST;
 
 export function UserView({ name, user_id }: { name: string, user_id: number }) {
-    const [taskChecked, setTaskChecked] = useState(false);
+    const [taskStates, setTaskStates] = useState<{ [taskId: number]: boolean }>({});
     const [tasks, setTasks] = useState<Array<any>>([]);
 
     //Get tasks for user
@@ -14,37 +15,49 @@ export function UserView({ name, user_id }: { name: string, user_id: number }) {
             withCredentials: true,
             params: { user_id }
         }).then((response: any) => {
-            setTasks(response.data)
+            const ordered = response.data.sort((a:any, b:any) => a.id - b.id);
+            
+            setTasks(ordered);
+
+            const initialStates: { [taskId: number]: boolean } = {};
+            response.data.forEach((task: any) => {
+                initialStates[task.id] = task.done === 1;
+            });
+
+            setTaskStates(initialStates);
+
         }).catch((error: any) => {
             console.error("Error fetchting tasks:", error);
         })
     }, []);
 
-    // Update when tasks are done
-    useEffect(() => {
-        axios.put(`${HOST}/api/taskupdate`, {
-            done: taskChecked ? 1 : 0,
-            user_id
-        }, {
-            withCredentials: true
-        }).then((response: any) => {
-            console.log(response.data);
-        }).catch((error: any) => {
-            console.error("Error updating tasks:", error);
-        })
-    }, [taskChecked]); // Only run when taskChecked changes
-
     return (
         <div className="container">
             <h1>Welcome {name}</h1>
-            {tasks.map((task, index) => (
-                <div key={index} className="card">
-                    <h2>{task.task}</h2><br />
-                    {task.description} <br /><br />
-                    {/* TODO: make logout functionality */}
-                    {/* TODO: refactor so it can work with more tasks */}
-                    Done?: <input type="checkbox" checked={taskChecked} onChange={(e) => setTaskChecked(e.target.checked)} required />
-                </div>
+            {tasks.map((task) => (
+                <React.Fragment key={task.id}>
+                    <div className="card">
+                        <h2>{task.task}</h2><br />
+                        {task.description} <br /><br />
+                        {/* TODO: make logout functionality */}
+                        Done?: <input type="checkbox" checked={!!taskStates[task.id]} onChange={(e) => {
+                            //Update tasks individually
+                            const checked = e.target.checked;
+                            setTaskStates(prev => ({ ...prev, [task.id]: checked }));
+
+                            axios.put(`${HOST}/api/taskupdate`, {
+                                done: checked ? 1 : 0,
+                                task_id: task.id,
+                                user_id,
+                            }, {
+                                withCredentials: true
+                            }).catch((error: any) => {
+                                console.error("Error updating tasks:", error);
+                            })
+                        }} />
+                    </div>
+                    <hr className="card-line" />
+                </React.Fragment>
             ))}
         </div>
     )
