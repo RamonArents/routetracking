@@ -117,6 +117,12 @@ app.post("/addtask", async (req: any, res: any) => {
 //login route
 app.use("/api", authRoutes);
 
+//logout route
+app.post("/api/logout", (req:any, res:any) => {
+  res.clearCookie("token");
+  res.status(200).send("Logged out");
+});
+
 //Useroverview route
 app.get("/api/useroverview", authMiddleWare, (req: any, res: any) => {
   res.json({ user: req.user })
