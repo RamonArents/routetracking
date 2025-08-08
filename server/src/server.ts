@@ -94,11 +94,13 @@ app.post("/adduser", async (req: any, res: any) => {
 app.post("/addtask", async (req: any, res: any) => {
   const payload: TaskCreatePayload = req.body;
 
+  console.log(payload);
+
   try {
 
-    const insertTask = "INSERT INTO tasks (task, description, user_id) VALUES ($1, $2, $3);";
+    const insertTask = "INSERT INTO tasks (task, description, user_id, name) VALUES ($1, $2, $3, $4);";
 
-    const params = [payload.task, payload.description, payload.user_id];
+    const params = [payload.task, payload.description, payload.user_id, payload.name];
 
     const response = await pool.query(insertTask, params);
 

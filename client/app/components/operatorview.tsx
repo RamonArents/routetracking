@@ -36,6 +36,8 @@ export function OperatorView({ name }: { name: string }) {
         axios.get(`${HOST}/api/users`, {
             withCredentials: true
         }).then((response: any) => {
+            //TODO: User id's are sometimes empty. Find out what is wrong.
+            console.log(response.data);
             setUsers(response.data)
         }).catch((error: any) => {
             console.error("Error fetchting users:", error);
@@ -61,11 +63,13 @@ export function OperatorView({ name }: { name: string }) {
         //Invalid form data
         if (!validate()) return;
 
+        console.log(user_id);
+
         //Save new user to the backend
         const res = await fetch(`${HOST}/addtask`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ task, description, user_id }),
+            body: JSON.stringify({ task, description, user_id, name }),
         });
 
         if (res.ok) {
