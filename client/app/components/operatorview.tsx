@@ -36,19 +36,24 @@ export function OperatorView({ name }: { name: string }) {
         axios.get(`${HOST}/api/users`, {
             withCredentials: true
         }).then((response: any) => {
-            //TODO: User id's are sometimes empty. Find out what is wrong.
-            console.log(response.data);
             setUsers(response.data)
         }).catch((error: any) => {
             console.error("Error fetchting users:", error);
         })
     }, []);
+    
+    /* User first value of selectbox as default */
+    useEffect(() => {
+        if(users.length > 0 && !user_id){
+            setUser_id(users[0].id);
+        }
+    }, [users, user_id]);
 
     /**
      * Handle selectbox
      * @param event target event
      */
-    const handleChange = (event: any) => {
+    const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setUser_id(event.target.value);
     }
 
