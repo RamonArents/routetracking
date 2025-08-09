@@ -169,6 +169,7 @@ textarea {
   padding:10px;
   transition: 0.9s;
   border-radius: 10px;
+  margin:20px;
 }
 
 .logout-button:hover{

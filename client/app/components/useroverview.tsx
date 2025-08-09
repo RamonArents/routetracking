@@ -9,6 +9,8 @@ const HOST = import.meta.env.VITE_HOST;
 export function UserView({ name, user_id }: { name: string, user_id: number }) {
     const [taskStates, setTaskStates] = useState<{ [taskId: number]: boolean }>({});
     const [tasks, setTasks] = useState<Array<any>>([]);
+    const [taskNames, setTaskNames] = useState<Array<any>>([]);
+    const [perTask, setPerTask] = useState<Array<any>>([]);
 
     const navigate = useNavigate();
 
@@ -18,8 +20,8 @@ export function UserView({ name, user_id }: { name: string, user_id: number }) {
             withCredentials: true,
             params: { user_id }
         }).then((response: any) => {
-            const ordered = response.data.sort((a:any, b:any) => a.id - b.id);
-            
+            const ordered = response.data.sort((a: any, b: any) => a.id - b.id);
+
             setTasks(ordered);
 
             const initialStates: { [taskId: number]: boolean } = {};
@@ -32,7 +34,36 @@ export function UserView({ name, user_id }: { name: string, user_id: number }) {
         }).catch((error: any) => {
             console.error("Error fetchting tasks:", error);
         })
+
+        // Get task names
+        axios.get(`${HOST}/api/tasknames`, {
+            withCredentials: true,
+            params: { user_id }
+        }).then((response: any) => {
+            setTaskNames(response.data);
+        }).catch((error: any) => {
+            console.error("Error fetchting tasknames:", error);
+        })
+
     }, []);
+
+    /**
+     * filter tasks per operator
+     */
+    const filterTasks = () => {
+
+        useEffect(() => {
+            axios.get(`${HOST}/api/pertask`, {
+            withCredentials: true,
+            params: { user_id }
+        }).then((response: any) => {
+            console.log(response.data);
+            //setPerTask(response.data);
+        }).catch((error: any) => {
+            console.error("Error fetchting tasknames:", error);
+        })        
+        }, []);
+    }
 
     /**
      * Logout user
@@ -43,7 +74,7 @@ export function UserView({ name, user_id }: { name: string, user_id: number }) {
             credentials: "include",
         });
 
-        if(response.status === 200 || response.status === 201){
+        if (response.status === 200 || response.status === 201) {
             navigate("/");
         } else {
             console.error("There was an error");
@@ -54,6 +85,13 @@ export function UserView({ name, user_id }: { name: string, user_id: number }) {
     return (
         <div className="container">
             <h1>Welcome {name}</h1>
+            {/* TODO: Add button to show all tasks */}
+            {/* TODO: Find out how to give argument to filterTasks function */}
+            {taskNames.map((taskName) => (
+                <React.Fragment key={taskName.name}>
+                    <button className="logout-button" onClick={filterTasks}>{taskName.name}</button>
+                </React.Fragment>
+            ))}
             <button onClick={logout} className="logout-button">Logout</button>
             {tasks.map((task) => (
                 <React.Fragment key={task.id}>
