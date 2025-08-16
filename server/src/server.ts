@@ -170,7 +170,7 @@ app.get("/api/tasknames", authMiddleWare, async (req: any, res:any) => {
 //Filter tasks
 app.get("/api/pertask", authMiddleWare, async (req: any, res:any) => {
   const userId  = parseInt(req.query.user_id);
-  const taskName = parseInt(req.query.taskName);
+  const taskName = req.query.taskName as string;
 
   try{
     const result = await pool.query("SELECT id, task, description, done FROM tasks WHERE user_id = $1 AND name = $2", [userId, taskName]);

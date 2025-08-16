@@ -23,6 +23,7 @@ export function UserView({ name, user_id }: { name: string, user_id: number }) {
             const ordered = response.data.sort((a: any, b: any) => a.id - b.id);
 
             setTasks(ordered);
+            setPerTask(ordered); //Initial state shows all tasks
 
             const initialStates: { [taskId: number]: boolean } = {};
             response.data.forEach((task: any) => {
@@ -50,20 +51,27 @@ export function UserView({ name, user_id }: { name: string, user_id: number }) {
     /**
      * filter tasks per operator
      */
-    const filterTasks = () => {
+    const filterTasks = async (taskName: string) => {
+        try {
+            const response = await axios.get(`${HOST}/api/pertask`, {
+                withCredentials: true,
+                params: { user_id, taskName }
+            });
 
-        useEffect(() => {
-            axios.get(`${HOST}/api/pertask`, {
-            withCredentials: true,
-            params: { user_id }
-        }).then((response: any) => {
-            console.log(response.data);
-            //setPerTask(response.data);
-        }).catch((error: any) => {
-            console.error("Error fetchting tasknames:", error);
-        })        
-        }, []);
+            const ordered = response.data.sort((a: any, b: any) => a.id - b.id);
+
+            setPerTask(ordered);
+        } catch (error) {
+            console.error("Error fetching tasknames:", error);
+        }
     }
+
+    /**
+     * Show all tasks
+     */
+    const showAllTasks = () => {
+        setPerTask(tasks);
+    };
 
     /**
      * Logout user
@@ -85,15 +93,14 @@ export function UserView({ name, user_id }: { name: string, user_id: number }) {
     return (
         <div className="container">
             <h1>Welcome {name}</h1>
-            {/* TODO: Add button to show all tasks */}
-            {/* TODO: Find out how to give argument to filterTasks function */}
+            <button className="logout-button" onClick={showAllTasks}>All Tasks</button>
             {taskNames.map((taskName) => (
                 <React.Fragment key={taskName.name}>
-                    <button className="logout-button" onClick={filterTasks}>{taskName.name}</button>
+                    <button className="logout-button" onClick={() => filterTasks(taskName.name)}>{taskName.name}</button>
                 </React.Fragment>
             ))}
             <button onClick={logout} className="logout-button">Logout</button>
-            {tasks.map((task) => (
+            {perTask.map((task) => (
                 <React.Fragment key={task.id}>
                     <div className="card">
                         <h2>{task.task}</h2><br />
